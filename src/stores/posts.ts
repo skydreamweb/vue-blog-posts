@@ -1,4 +1,5 @@
 import { reactive, readonly, ref } from "vue";
+import { useFetch } from '@vueuse/core'
 
 interface PostsState {
     body: string;
@@ -80,30 +81,26 @@ export class PostStore {
     }
 
     async fetchAllPosts() {
-        const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-        const data = await res.json();
-        this.#allPosts = data;
+        const { isFetching, error, data } = await useFetch("https://jsonplaceholder.typicode.com/posts").get().json();
+        this.#allPosts = data.value;
     }
 
     // Fetch single post
     async fetchSinglePost(id: number) {
-        const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
-        const data = await res.json();
-        return data;
+        const { isFetching, error, data } = await useFetch(`https://jsonplaceholder.typicode.com/posts/${id}`).get().json();
+        return data.value;
     }
 
     // Fetch single post comments
     async fetchSinglePostComments(id: number) {
-        const res = await fetch(`https://jsonplaceholder.typicode.com/comments?postId=${id}`);
-        const data = await res.json();
-        return data;
+        const { isFetching, error, data } = await useFetch(`https://jsonplaceholder.typicode.com/comments?postId=${id}`).get().json();
+        return data.value;
     }
 
     // Fetch single user
     async fetchSingleUser(id: number) {
-        const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
-        const data = await res.json();
-        return data;
+        const { isFetching, error, data } = await useFetch(`https://jsonplaceholder.typicode.com/users/${id}`).get().json();
+        return data.value;
     }
 
     // Save single post in state

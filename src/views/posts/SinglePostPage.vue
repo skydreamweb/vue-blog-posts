@@ -49,6 +49,7 @@ import { usePosts } from '../../stores/posts'
 import Button from "../../components/global/Button.vue";
 import IconMessage from "../../components/icons/IconMessage.vue";
 import { useRoute } from 'vue-router'
+import { capitalizeFirstLetter } from '../../composables/helpers'
 const route = useRoute()
 
 interface PostComments {
@@ -99,11 +100,6 @@ if (!singlePost.post.id || !singlePost.comments.length) {
     // else render from the store
 } else {
     postContent = singlePost as SinglePostState
-}
-
-// Capitalize first letter
-function capitalizeFirstLetter(word: string) {
-    return word.charAt(0).toUpperCase() + word.slice(1);
 }
 </script>
 

@@ -22,7 +22,7 @@
                                 <SinglePost :post="post" />
                             </div>
                         </div>
-                        <Pagination v-if="search.length" :totalItems="100" :itemsPerPage="itemsPerPage" class="mt-6"
+                        <Pagination v-if="!search.length" :totalItems="100" :itemsPerPage="itemsPerPage" class="mt-6"
                             @onPageChange="handlePageChange" />
                     </div>
                     <div v-else>
@@ -75,7 +75,6 @@ const isLoading = ref(false);
 let timeoutId: number | null = null;
 
 const performSearch = async (value: any) => {
-    console.log(value)
     const fetchUsers = fetch('https://jsonplaceholder.typicode.com/users')
         .then(res => res.json() as Promise<User[]>)
         .then((response) => {
@@ -122,7 +121,7 @@ const itemsOnCurrentPage = computed(() => {
 })
 
 // Change the pagination page
-async function handlePageChange(page: number, direction: string) {
+async function handlePageChange(page: number) {
     currentPage.value = page
     // Call the store method 
     await postStore.fetchChunkOfPosts((currentPage.value - 1) * 10)

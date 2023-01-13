@@ -46,6 +46,7 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
+import type Types from '../../types/post'
 import { usePosts } from '../../stores/posts'
 import Button from "../../components/global/Button.vue";
 import IconMessage from "../../components/icons/IconMessage.vue";
@@ -53,32 +54,11 @@ import { useRoute } from 'vue-router'
 import { capitalizeFirstLetter } from '../../composables/helpers'
 const route = useRoute()
 
-interface PostComments {
-    postId: number,
-    id: number;
-    name: string;
-    email: string;
-    body: string;
-}
-interface PostsState {
-    body: string;
-    id: number | null;
-    title: string;
-    userId: number | null;
-    userName?: string;
-    userEmail?: string;
-}
-
-interface SinglePostState {
-    post: PostsState;
-    comments: PostComments[];
-}
-
 // Initiate the store
 const postStore = usePosts()
 const singlePost = postStore.getSinglePostFromStore();
 
-let postContent = reactive<SinglePostState>({
+let postContent = reactive<Types.SinglePostState>({
     post: { id: null, title: '', body: '', userId: null },
     comments: []
 });
@@ -100,7 +80,7 @@ if (!singlePost.post.id || !singlePost.comments.length) {
     getSinglePost()
     // else render from the store
 } else {
-    postContent = singlePost as SinglePostState
+    postContent = singlePost as Types.SinglePostState
 }
 </script>
 

@@ -54,6 +54,7 @@
 <script setup lang="ts">
 import router from "@/router";
 import { ref, reactive } from 'vue'
+import type Types from '../../types/post'
 import { usePosts } from '../../stores/posts'
 import Button from "../global/Button.vue";
 import IconMessage from "../icons/IconMessage.vue";
@@ -69,15 +70,7 @@ const props = defineProps<{
     };
 }>();
 
-interface PostComments {
-    postId: number,
-    id: number;
-    name: string;
-    email: string;
-    body: string;
-}
-
-let allComments: PostComments[] = reactive([])
+let allComments: Types.PostComments[] = reactive([])
 const updatingValue = ref(0)
 let commentsMessage = ref('Loading...')
 
@@ -86,7 +79,7 @@ const postStore = usePosts()
 
 // Fetch comments
 const postComments = await postStore.fetchSinglePostComments(props.post.id)
-allComments = postComments as PostComments[]
+allComments = postComments as Types.PostComments[]
 updatingValue.value = 1;
 
 // Open single post and save post/comments data to store

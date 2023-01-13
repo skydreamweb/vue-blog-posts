@@ -1,44 +1,16 @@
 import { reactive, readonly, ref } from "vue";
 import { useFetch } from '@vueuse/core'
-
-interface PostsState {
-    body: string;
-    id: number | null;
-    title: string;
-    userId: number | null;
-    userName?: string;
-    userEmail?: string;
-}
-
-interface UsersState {
-    id: number;
-    name: string;
-    email: string;
-}
-
-interface PostComments {
-    postId: number,
-    id: number;
-    name: string;
-    email: string;
-    body: string;
-}
-
-interface PostsStateItems extends Array<PostsState> { }
-interface SinglePostState {
-    post: PostsState;
-    comments: PostComments[];
-}
+import type Types from '../types/post'
 
 export class PostStore {
     #allPosts;                // Private variable #allPosts keeps total number of posts
-    #chunk: PostsStateItems;  // Private variable #chunk keeps last 10 updated posts
-    #singlePost: SinglePostState; // Private variable #comments keeps all the comments from the single post
+    #chunk: Types.PostsStateItems;  // Private variable #chunk keeps last 10 updated posts
+    #singlePost: Types.SinglePostState; // Private variable #comments keeps all the comments from the single post
 
     constructor() {
-        this.#chunk = reactive<PostsStateItems>([]);
+        this.#chunk = reactive<Types.PostsStateItems>([]);
         this.#allPosts = ref(0);
-        this.#singlePost = reactive<SinglePostState>({
+        this.#singlePost = reactive<Types.SinglePostState>({
             post: { id: null, title: '', body: '', userId: null },
             comments: []
         });
@@ -60,11 +32,11 @@ export class PostStore {
     async fetchChunkOfPosts(start: number) {
         // Fetch all posts 10 by 10
         const fetchChunkOfPosts = await fetch(`https://jsonplaceholder.typicode.com/posts?_start=${start}&_limit=10`);
-        const fetchedPostData = await fetchChunkOfPosts.json() as PostsStateItems
+        const fetchedPostData = await fetchChunkOfPosts.json() as Types.PostsStateItems
 
         // Fetch all users
         const fetchAllUsers = await fetch(`https://jsonplaceholder.typicode.com/users`);
-        const fetchedUserData = await fetchAllUsers.json() as UsersState[]
+        const fetchedUserData = await fetchAllUsers.json() as Types.UsersState[]
 
         // Loop and filter 'userId' from the posts with the 'id' from the users
         fetchedPostData.forEach(post => {
@@ -105,7 +77,7 @@ export class PostStore {
     }
 
     // Save single post in state
-    saveSinglePost(post: PostsState, comments: PostComments[]) {
+    saveSinglePost(post: Types.PostsState, comments: Types.PostComments[]) {
         this.#singlePost = { post, comments };
     }
 }

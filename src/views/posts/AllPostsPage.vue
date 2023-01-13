@@ -3,38 +3,28 @@
         <Suspense>
             <template #default>
                 <div>
-                    <!-- Input search form start -->
-                    <form class="search-form mx-auto">
-                        <label for="default-search"
-                            class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <IconZoom />
-                            </div>
-                            <input type="search" id="default-search" v-model="search"
-                                class="block w-full p-4 pl-10 text-sm border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="Search Posts by Users..." required />
-                        </div>
-                    </form>
-                    <!-- Input search form end -->
-
+                    <SearchForm @emitSearchingPosts="searchingPosts" />
                     <!-- All posts rendered start -->
-                    <div class="flex flex-wrap w-full justify-between mb-6" v-if="!search.length">
+                    <div class="flex flex-wrap w-full justify-between mb-6" v-if="!isSearching">
                         <div class="p-0 m-0 flex flex-wrap">
-                            <div v-for="post of itemsOnCurrentPage.itemsOnPage" :key="post.id"
-                                class="my-2 px-4 md:w-1/2">
+                            <div v-for="post of itemsOnCurrentPage" :key="post.id" class="my-2 px-4 md:w-1/2">
                                 <SinglePost :post="post" />
                             </div>
                         </div>
-                        <Pagination v-if="!search.length" :totalItems="100" :itemsPerPage="itemsPerPage" class="mt-6"
-                            @onPageChange="handlePageChange" />
+                        <Pagination v-if="!search.length" :totalItems="numberOfPosts" :itemsPerPage="itemsPerPage"
+                            class="mt-6" @onPageChange="handlePageChange" />
                     </div>
                     <!-- All posts rendered end  -->
 
                     <div v-else>
-                        <div v-if="isLoading" class="p-0 m-0 flex flex-wrap">
-                            <div v-for="post of itemsOnCurrentPage.itemsOnPage" :key="post.id" class="my-2 px-4 w-1/2">
-                                <SinglePost :post="post" />
+                        <div v-if="!isLoading" class="p-0 m-0">
+                            <div v-if="filteredResults?.length" class="flex flex-wrap">
+                                <div v-for="post of filteredResults" :key="post.id" class="my-2 px-4 md:w-1/2">
+                                    <SinglePost :post="post" />
+                                </div>
+                            </div>
+                            <div class="flex text-2xl justify-center mx-auto mt-6" v-else>
+                                No user posts.
                             </div>
                         </div>
                         <div v-else class="p-0 m-0 flex flex-wrap mx-auto">
@@ -54,47 +44,72 @@
 import { ref, computed, onMounted, watch } from "vue";
 import type Types from '../../types/post'
 import { usePosts } from "../../stores/posts";
-import Pagination from "../../components/global/Pagination.vue";
-import Loading from "../../components/global/Loading.vue";
-import SinglePost from "../../components/post/SinglePost.vue";
-import IconZoom from "../../components/icons/IconZoom.vue";
+import Pagination from "@/components/global/Pagination.vue";
+import Loading from "@/components/global/Loading.vue";
+import SinglePost from "@/components/post/SinglePost.vue";
+import SearchForm from '@/components/global/SearchForm.vue'
 
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
+const numberOfPosts = ref(0)
 const search = ref("");
+const isSearching = ref(false)
 const isLoading = ref(false);
 let timeoutId: number | null = null;
+let filteredResults = ref<Types.Post[]>();
 
-const performSearch = async (value: any) => {
-    const fetchUsers = fetch("https://jsonplaceholder.typicode.com/users")
-        .then(res => res.json() as Promise<Types.User[]>)
-        .then(response => {
-            // do something with the data
-            const filteredUsers = response.filter(
-                user =>
-                    user.name.toLowerCase().includes(value.toLowerCase()) ||
-                    user.username.toLowerCase().includes(value.toLowerCase()) ||
-                    user.email.toLowerCase().includes(value.toLowerCase())
-            );
-            isLoading.value = false;
-            return filteredUsers;
-        });
-    console.log(fetchUsers);
-};
-
-// Watch for user search input and delay request for 500ms
-watch(
-    () => search.value,
-    newValue => {
-        if (newValue) isLoading.value = true;
+// Custom debounce function can be replaced with the _loadash debounce function
+const searchingPosts = (value: string) => {
+    if (value.length > 0) {
         if (timeoutId !== null) {
             clearTimeout(timeoutId);
         }
         timeoutId = setTimeout(() => {
-            performSearch(newValue);
+            isSearching.value = true;
+            isLoading.value = true;
+            performSearch(value);
         }, 500);
+    } else {
+        isSearching.value = false;
+        isLoading.value = false;
     }
-);
+}
+
+// Perform search on user input
+const performSearch = async (value: string) => {
+    // Fetch all users
+    const allUsers = await postStore.fetchAllUsers()
+    // Filter user data with input string
+    const filteredUsers = allUsers.filter(
+        (user: Types.User) =>
+            // check with .includes() or regex
+            user.name.toLowerCase().includes(value.toLowerCase()) ||
+            user.username.toLowerCase().includes(value.toLowerCase()) ||
+            user.email.toLowerCase().includes(value.toLowerCase())
+    );
+
+    // If there are users fetch posts and comments
+    if (filteredUsers.length) {
+        const allPostsPromises = filteredUsers.map(async (user: Types.User) => {
+            // Fetch all posts of single a user
+            const singleUserPost = await postStore.fetchSingleUserPost(user.id)
+            // Add userId and userName to user object
+            const allPosts = await singleUserPost.map(async (post: Types.Post) => {
+                post.userId = user.id;
+                post.userName = user.name;
+            })
+            return allPosts
+        });
+        const flattenedValue = await Promise.all(allPostsPromises)
+
+        // Assign filtered posts to filter results to render
+        filteredResults.value = flattenedValue[0];
+    } else {
+        // If no filtered posts return empty array
+        filteredResults.value = []
+    }
+    isLoading.value = false;
+};
 
 // Initiate the store
 const postStore = usePosts();
@@ -103,19 +118,21 @@ const postStore = usePosts();
 async function getAllData() {
     await postStore.fetchChunkOfPosts(currentPage.value - 1);
     await postStore.fetchAllPosts();
+    return postStore.getState();
 }
 
 // Return chunk of posts from the store state
 const chunkPosts = postStore.getChunk() as Types.Post[];
-const allPosts = postStore.getState();
+
+// Return total number of posts
+getAllData()
+    .then(res => {
+        numberOfPosts.value = res.length
+    })
+    .catch(err => console.log(err))
 
 // Pagination
-const itemsOnCurrentPage = computed(() => {
-    return {
-        itemsOnPage: chunkPosts,
-        allPosts: allPosts
-    };
-});
+const itemsOnCurrentPage = computed(() => chunkPosts);
 
 // Change the pagination page
 async function handlePageChange(page: number) {

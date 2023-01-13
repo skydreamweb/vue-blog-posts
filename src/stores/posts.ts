@@ -3,15 +3,15 @@ import { useFetch } from '@vueuse/core'
 import type Types from '../types/post'
 
 export class PostStore {
-    #allPosts;                // Private variable #allPosts keeps total number of posts
     #chunk: Types.PostsStateItems;  // Private variable #chunk keeps last 10 updated posts
+    #allPosts: Types.PostsStateItems;                // Private variable #allPosts keeps total number of posts
     #singlePost: Types.SinglePostState; // Private variable #comments keeps all the comments from the single post
 
     constructor() {
         this.#chunk = reactive<Types.PostsStateItems>([]);
-        this.#allPosts = ref(0);
+        this.#allPosts = reactive([])
         this.#singlePost = reactive<Types.SinglePostState>({
-            post: { id: null, title: '', body: '', userId: null },
+            post: { id: 0, title: '', body: '', userId: 0 },
             comments: []
         });
     }
@@ -64,9 +64,22 @@ export class PostStore {
         return data.value;
     }
 
+
+    // Fetch posts from the single user
+    async fetchSingleUserPost(id: number) {
+        const { isFetching, error, data } = await useFetch(`https://jsonplaceholder.typicode.com/posts?userId=${id}`).get().json();
+        return data.value;
+    }
+
     // Fetch single post comments
     async fetchSinglePostComments(id: number) {
         const { isFetching, error, data } = await useFetch(`https://jsonplaceholder.typicode.com/comments?postId=${id}`).get().json();
+        return data.value;
+    }
+
+    // Fetch all users
+    async fetchAllUsers() {
+        const { isFetching, error, data } = await useFetch(`https://jsonplaceholder.typicode.com/users`).get().json();
         return data.value;
     }
 
@@ -77,7 +90,7 @@ export class PostStore {
     }
 
     // Save single post in state
-    saveSinglePost(post: Types.PostsState, comments: Types.PostComments[]) {
+    saveSinglePost(post: Types.Post, comments: Types.PostComments[]) {
         this.#singlePost = { post, comments };
     }
 }

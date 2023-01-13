@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import Header from './components/layout/TheHeader.vue'
-import Footer from './components/layout/TheFooter.vue'
+import Header from './components/layout/Header.vue'
+import Footer from './components/layout/Footer.vue'
 </script>
 
 <template>
@@ -17,6 +17,7 @@ import Footer from './components/layout/TheFooter.vue'
 .content {
   max-width: 1280px;
   width: 100%;
+  height: 100%;
   margin: 0 auto;
   padding: 2rem 0;
 }

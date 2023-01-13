@@ -61,13 +61,7 @@ import IconMessage from "../icons/IconMessage.vue";
 import { capitalizeFirstLetter } from '../../composables/helpers'
 
 const props = defineProps<{
-    post: {
-        body: string;
-        id: number;
-        title: string;
-        userId: number;
-        userName: string;
-    };
+    post: Types.Post;
 }>();
 
 let allComments: Types.PostComments[] = reactive([])

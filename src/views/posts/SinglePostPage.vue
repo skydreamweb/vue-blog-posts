@@ -1,5 +1,5 @@
 <template>
-    <div class="page-content px-2">
+    <div class="page-content px-2 mx-auto">
         <div v-if="postContent.post.id"
             class="h-full w-full py-3 px-2 md:p-6 bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
             <div class="flex justify-between">
@@ -59,23 +59,27 @@ const postStore = usePosts()
 const singlePost = postStore.getSinglePostFromStore();
 
 let postContent = reactive<Types.SinglePostState>({
-    post: { id: null, title: '', body: '', userId: null },
+    post: { id: 0, title: '', body: '', userId: 0 },
     comments: []
 });
 
 // If post doesn't exist in store render from the server
-if (!singlePost.post.id || !singlePost.comments.length) {
+if (!singlePost.post.title.length || !singlePost.comments.length) {
     async function getSinglePost() {
-        // Fetch single post, post comments and user info
-        const singlePost = await postStore.fetchSinglePost(Number(route.params.id))
-        const postComments = await postStore.fetchSinglePostComments(singlePost.id)
-        const singleUser = await postStore.fetchSingleUser(singlePost.id)
+        try {
+            // Fetch single post, post comments and user info
+            const singlePost = await postStore.fetchSinglePost(Number(route.params.id))
+            const postComments = await postStore.fetchSinglePostComments(singlePost.id)
+            const singleUser = await postStore.fetchSingleUser(singlePost.userId)
 
-        // Assigne to new object to render in template
-        postContent.post = singlePost;
-        postContent.post.userName = singleUser.name;
-        postContent.post.userEmail = singleUser.email;
-        postContent.comments = postComments;
+            // Assigne to new object to render in template
+            postContent.post = singlePost;
+            postContent.post.userName = singleUser.name;
+            postContent.post.userEmail = singleUser.email;
+            postContent.comments = postComments;
+        } catch (e) {
+            console.log('Error', e)
+        }
     }
     getSinglePost()
     // else render from the store

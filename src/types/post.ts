@@ -1,10 +1,11 @@
 namespace Types {
     export interface Post {
-        body: string;
         id: number;
         title: string;
+        body: string;
         userId: number;
-        userName: string;
+        userName?: string;
+        userEmail?: string;
     };
 
     export interface User {
@@ -23,17 +24,8 @@ namespace Types {
         body: string;
     }
 
-    export interface PostsState {
-        body: string;
-        id: number | null;
-        title: string;
-        userId: number | null;
-        userName?: string;
-        userEmail?: string;
-    }
-
     export interface SinglePostState {
-        post: PostsState;
+        post: Post;
         comments: PostComments[];
     }
 
@@ -43,7 +35,7 @@ namespace Types {
         email: string;
     }
 
-    export interface PostsStateItems extends Array<PostsState> { }
+    export interface PostsStateItems extends Array<Post> { }
 
 }
 

@@ -1,39 +1,40 @@
 <template>
-    <div class="page-content">
+    <div class="page-content px-2">
         <div v-if="postContent.post.id"
-            class="h-full w-full p-6 bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
+            class="h-full w-full py-3 px-2 md:p-6 bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
             <div class="flex justify-between">
-                <span class="dark:text-white flex justify-center">
+                <span class="dark:text-white flex justify-center text-xs md:text-base">
                     Author: {{ postContent.post.userName }} <br /> Email: {{ postContent.post.userEmail }}
                 </span>
                 <IconMessage />
             </div>
-            <div class="py-6">
-                <h5 class="my-6 text-2xl font-semibold tracking-tight dark:text-white">
+            <div class="py-2 md:py-1">
+                <h5 class="my-2 md:my-6 text-md md:text-2xl font-semibold tracking-tight dark:text-white">
                     {{ capitalizeFirstLetter(postContent.post.title) }}
                 </h5>
             </div>
-            <p class="mb-6 font-normal dark:text-gray-400">
+            <p class="mb-6 text-sm md:text-lg font-normal dark:text-gray-400">
                 {{ capitalizeFirstLetter(postContent.post.body) }}
             </p>
             <div>
-                <div class="dark:text-white">Comments</div>
+                <div class="dark:text-white text-sm md:text-base">Comments</div>
                 <div class="flex flex-wrap w-full justify-between mb-6">
                     <div v-for="(comments, index) of postContent.comments" :key="index"
                         class="my-2 flex flex-col  dark:text-white last:mb-4">
                         <hr />
-                        <span class="font-bold my-2">&#9655; User: {{
+                        <span class="font-bold my-2 text-sm md:text-lg">&#9655; User: {{
                             capitalizeFirstLetter(comments.name)
                         }}</span>
-                        <span class="dark:text-gray-400">{{
+                        <span class="dark:text-gray-400 text-xs md:text-base">{{
                             capitalizeFirstLetter(comments.body)
                         }}</span>
                     </div>
                 </div>
             </div>
-            <div class="my-6 text-md font-semibold tracking-tight dark:text-white">Number of comments: {{
-                postContent.comments.length
-            }}
+            <div class="my-6 text-md font-semibold tracking-tight dark:text-white text-sm md:text-md">Number of
+                comments: {{
+                    postContent.comments.length
+                }}
             </div>
             <Button @buttonClicked="$router.go(-1)" title="Back to posts" class="absolute bottom-4 right-4" />
         </div>

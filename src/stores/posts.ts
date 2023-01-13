@@ -83,6 +83,7 @@ export class PostStore {
     async fetchAllPosts() {
         const { isFetching, error, data } = await useFetch("https://jsonplaceholder.typicode.com/posts").get().json();
         this.#allPosts = data.value;
+        return data.value;
     }
 
     // Fetch single post

@@ -9,14 +9,14 @@
                 - 1) * 10 + 10}}</span> of <span class="font-semibold dark:text-gray-900">{{ totalItems }}</span>
                 Posts
             </div>
-            <ul class="inline-flex -space-x-px">
+            <ul class="inline-flex -space-x-px justify-center">
                 <li>
                     <button @click="previousPage" :disabled="currentPage === 1"
                         class="px-3 py-2 ml-0 leading-tight bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</button>
                 </li>
                 <li v-for="page in pages" :key="page">
                     <button @click="goToPage(page)" :class="{ 'dark:bg-gray-300 dark:text-black': page == currentPage }"
-                        class="px-3 py-2 leading-tight bg-white border border-gray-300  dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{
+                        class="px-1 py-2 md:px-3 leading-tight bg-white border border-gray-300  dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{
                             page
                         }}</button>
                 </li>

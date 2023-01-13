@@ -5,33 +5,34 @@
             <template #default>
                 <div class="h-full">
                     <div class="flex justify-between">
-                        <span class="dark:text-white flex justify-center">
+                        <span class="dark:text-white flex justify-center text-xs md:text-lg">
                             Author: {{ post.userName }}
                         </span>
                         <IconMessage />
                     </div>
                     <a href="#">
-                        <h5 class="mb-2 text-2xl font-semibold tracking-tight dark:text-white">
+                        <h5 class="mb-2 text-md md:text-2xl font-semibold tracking-tight dark:text-white">
                             {{ capitalizeFirstLetter(post.title) }}
                         </h5>
                     </a>
-                    <p class="mb-6 font-normal dark:text-gray-400">
+                    <p class="mb-6 text-sm md:text-base font-normal dark:text-gray-400">
                         {{ capitalizeFirstLetter(post.body.slice(0, 70)) }}...
                     </p>
                     <hr />
-                    <div class="mb-2 mt-2 text-md font-semibold tracking-tight dark:text-white">Number of comments: {{
-                        allComments.length
-                    }}
+                    <div class="mb-2 mt-2 text-xs md:text-base font-semibold tracking-tight dark:text-white">Number of
+                        comments: {{
+                            allComments.length
+                        }}
                     </div>
                     <div v-if="updatingValue > 0">
                         <div class="flex flex-wrap w-full justify-between mb-6">
                             <div v-for="(comments, index) of allComments" :key="index"
                                 class="my-2 flex flex-col  dark:text-white last:mb-4">
                                 <hr />
-                                <span class="font-bold my-2">&#9655; User: {{
+                                <span class="font-bold my-2 text-sm md:text-base">&#9655; User: {{
                                     capitalizeFirstLetter(comments.name)
                                 }}</span>
-                                <span class="dark:text-gray-400">{{
+                                <span class="dark:text-gray-400 text-xs md:text-base">{{
                                     capitalizeFirstLetter(comments.body).slice(0, 130)
                                 }}...</span>
                             </div>

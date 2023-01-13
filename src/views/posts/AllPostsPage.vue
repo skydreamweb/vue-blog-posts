@@ -3,6 +3,7 @@
         <Suspense>
             <template #default>
                 <div>
+                    <!-- Input search form start -->
                     <form class="search-form mx-auto">
                         <label for="default-search"
                             class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
@@ -16,15 +17,20 @@
 
                         </div>
                     </form>
+                    <!-- Input search form end -->
+
+                    <!-- All posts rendered start -->
                     <div class="flex flex-wrap w-full justify-between mb-6" v-if="!search.length">
                         <div class="p-0 m-0 flex flex-wrap">
-                            <div v-for="post of itemsOnCurrentPage.itemsOnPage" :key="post.id" class="my-2 px-4 w-1/2">
+                            <div v-for="post of itemsOnCurrentPage.itemsOnPage" :key="post.id"
+                                class="my-2 px-4 md:w-1/2">
                                 <SinglePost :post="post" />
                             </div>
                         </div>
                         <Pagination v-if="!search.length" :totalItems="100" :itemsPerPage="itemsPerPage" class="mt-6"
                             @onPageChange="handlePageChange" />
                     </div>
+                    <!-- All posts rendered end  -->
                     <div v-else>
                         <div v-if="isLoading" class="p-0 m-0 flex flex-wrap">
                             <div v-for="post of itemsOnCurrentPage.itemsOnPage" :key="post.id" class="my-2 px-4 w-1/2">

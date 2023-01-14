@@ -93,12 +93,13 @@ const performSearch = async (value: string) => {
         const allPostsPromises = filteredUsers.map(async (user: Types.User) => {
             // Fetch all posts of single a user
             const singleUserPost = await postStore.fetchSingleUserPost(user.id)
-            // Add userId and userName to user object
-            const allPosts = await singleUserPost.map(async (post: Types.Post) => {
+            // Add userId, userName and userEmail to user object
+            singleUserPost.map((post: Types.Post) => {
                 post.userId = user.id;
+                post.userEmail = user.email;
                 post.userName = user.name;
-            })
-            return allPosts
+            });
+            return singleUserPost
         });
         const flattenedValue = await Promise.all(allPostsPromises)
 

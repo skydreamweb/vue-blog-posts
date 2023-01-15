@@ -2,7 +2,7 @@
     <div class="w-full">
         <Suspense>
             <template #default>
-                <div>
+                <div v-if="!isLoadingPage">
                     <SearchForm @emitSearchingPosts="searchingPosts" />
                     <!-- All posts rendered start -->
                     <div class="flex flex-wrap w-full justify-between mb-6" v-if="!isSearching">
@@ -32,6 +32,9 @@
                         </div>
                     </div>
                 </div>
+                <div v-else>
+                    <Loading />
+                </div>
             </template>
             <template #fallback>
                 <Loading />
@@ -54,7 +57,8 @@ const itemsPerPage = ref(10);
 const numberOfPosts = ref(0)
 const search = ref("");
 const isSearching = ref(false)
-const isLoading = ref(false);
+const isLoading = ref(true);
+const isLoadingPage = ref(true);
 let timeoutId: number | null = null;
 let filteredResults = ref<Types.Post[]>();
 
@@ -129,6 +133,7 @@ const chunkPosts = postStore.getChunk() as Types.Post[];
 getAllData()
     .then(res => {
         numberOfPosts.value = res.length
+        isLoadingPage.value = false;
     })
     .catch(err => console.log(err))
 
@@ -142,7 +147,6 @@ async function handlePageChange(page: number) {
     await postStore.fetchChunkOfPosts((currentPage.value - 1) * 10);
 }
 
-onMounted(getAllData);
 </script>
 
 <style scoped>
